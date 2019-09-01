@@ -1,6 +1,5 @@
 'use strict';
 
-console.clear();
 const Validators = {
   PHONE: /^((0[1-9])|(\+[1-9]{2,3}))((([0-9]{2}){4})|(( [0-9]{2}){4})|((-[0-9]{2}){4}))$/,
   EMAIL: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -108,6 +107,9 @@ class StateStore {
       }
     })
   }
+  deleteHandler(state) {
+    delete this._handlers[StateStore._getHandlerName(state)];
+  }
   setHandler(state, handler) {
     if(typeof handler == 'function') {
       this._handlers[StateStore._getHandlerName(state)] = handler;
@@ -123,6 +125,7 @@ class StateStore {
     return { ...this._state };
   }
   set state(val) {
+    console.warn('cannot set state using StateStoreInstance.state use StateStoreInstance.setState instead');
     return false;
   }
   setState(stateObj, callback) {
