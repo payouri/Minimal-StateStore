@@ -1,7 +1,7 @@
 # Minimal-StateStore
 store data and trigger functions on value update
 
-```
+```javascript
 const stateStore = new StateStore({
   state: {
   //data value that will be observed
