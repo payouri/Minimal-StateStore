@@ -13,15 +13,30 @@ Object.defineProperty(Validators, 'testVal', {
   
 });
 
+/**
+ * @typedef {class} StateStore
+ */
 class StateStore {
-  constructor({ model, handlers, state = {}, lousyModel = false } = {}) {
+  constructor({ model, handlers, state = {}, lousyModel = false, enableWarnings = false } = {}) {
 
     this._model = StateStore.initModel(model, { lousyModel });
     this._state = StateStore.initState(this, state);
     this._handlers = StateStore.initHandlers(handlers);
     
+    StateStore.enableWarnings = enableWarnings;
+
   }
-  static initModel(model = {}, { lousyModel }) {
+  /**
+   * 
+   * @typedef {object} ModelOpts  
+   * @property {boolean} lousyModel 
+   */
+  /**
+   * 
+   * @param {Object} model 
+   * @param {ModelOpts} ModelOptions 
+   */
+  static initModel(model = {}, { lousyModel = false }) {
     if(Object.keys(model).length > 0) {
       const m = { };
       Object.defineProperties(m, {
@@ -73,7 +88,7 @@ class StateStore {
       if(typeof obj[prop] == 'function') {
         const handlerName = StateStore._getHandlerName(prop);
         h[handlerName] = obj[prop];
-      } else {
+      } else if(StateStore.enableWarnings) {
         console.warn(prop + obj[prop].toString() + ', is not a valid handler')
       }
     }
@@ -86,11 +101,13 @@ class StateStore {
     return new Proxy(state || instance._state || {}, {
       set: (rawStateObj, prop, value) => {
         
-        const oldValue = rawStateObj[prop] ? rawStateObj[prop] : null,
+        const oldValue = rawStateObj[prop] ? ({...rawStateObj})[prop] : null,
               model = instance._model;
         
         if(!model || model.checkValid(prop, value))
           rawStateObj[prop] = value;
+        else if(StateStore.enableWarnings)
+          console.warn(`${value} isn't a valid value for ${prop} property`);
         
         const handlerName = StateStore._getHandlerName(prop);
         
@@ -115,8 +132,11 @@ class StateStore {
       this._handlers[StateStore._getHandlerName(state)] = handler;
       return true;
     }
-    else
+    else {
+      if(StateStore.enableWarnings)
+        console.warn(`cannot set ${state} handler ${handler.toString()} isn't a valid value`);
       return false;
+    }
   }
   get handlers() {
     return this._handlers ? this._handlers : {};
@@ -125,7 +145,8 @@ class StateStore {
     return { ...this._state };
   }
   set state(val) {
-    console.warn('cannot set state using StateStoreInstance.state use StateStoreInstance.setState instead');
+    if(StateStore.enableWarnings)
+      console.warn('cannot set state using StateStoreInstance.state use StateStoreInstance.setState instead');
     return false;
   }
   setState(stateObj, callback) {
@@ -141,24 +162,28 @@ class StateStore {
       
       return true
     } 
-    else
+    else {
+      if(StateStore.enableWarnings)
+        console.warn(`${stateObj} isn't an object`);
       return false;
+    }
   }
 } 
-// const s = new StateStore({
-//   state: {
-//     test: 123,
-//   },
-//   model: {
-//     test: 'number',
-//     phone: 'PHONE',
-//   },
-//   lousyModel: false,
-//   handlers: {
-//     test: (test) => { console.log('dsqdq', test) }
-//   }
-// });
+const s = new StateStore({
+  state: {
+    test: 123,
+  },
+  model: {
+    test: 'number',
+    phone: 'PHONE',
+  },
+  lousyModel: false,
+  enableWarnings: true,
+  handlers: {
+    test: (test) => { console.log('dsqdq', test) }
+  }
+});
 
-// s.setState({ qdqd: 232, test: 'dqsdq', phone: '0677332211'}, stateObj => {
-//   console.log(stateObj)
-// })
+s.setState({ qdqd: 232, test: 'dqsdq', phone: '0677332211'}, stateObj => {
+  console.log(stateObj)
+})
