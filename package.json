@@ -1,0 +1,23 @@
+{
+  "name": "@youri-kane/minimal-statestore",
+  "version": "1.0.0",
+  "description": "a minimal state store, trigger handlers on state update and with optional state validation",
+  "main": "StateStrore.module.js",
+  "scripts": {
+    "test": "node ./StateStore.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/payouri/Minimal-StateStore.git"
+  },
+  "keywords": [
+    "state",
+    "simple"
+  ],
+  "author": "Youri Pailloux",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/payouri/Minimal-StateStore/issues"
+  },
+  "homepage": "https://github.com/payouri/Minimal-StateStore#readme"
+}
