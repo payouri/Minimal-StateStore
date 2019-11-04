@@ -12,13 +12,20 @@ Object.defineProperty(Validators, 'testVal', {
   writable: false,
   
 });
-
+/**
+ * @typedef StateStoreModel
+ * @property {Object} Model object to validate
+ * @property {Function} checkValid
+ */
 /**
  * @typedef {class} StateStore
  */
 class StateStore {
   constructor({ model, handlers, state = {}, lousyModel = false, enableWarnings = false } = {}) {
 
+    /**
+     * @property {StateStoreModel} 
+    */
     this._model = StateStore.initModel(model, { lousyModel });
     this._state = StateStore.initState(this, state);
     this._handlers = StateStore.initHandlers(handlers);
@@ -159,6 +166,7 @@ class StateStore {
     return false;
   }
   setState(stateObj, callback) {
+    
     if(typeof stateObj == 'object') {
       
       const oldState = { ...this._state };
@@ -176,6 +184,15 @@ class StateStore {
         console.warn(`${stateObj} isn't an object`);
       return false;
     }
+
+  }
+  clearState(callback, initValues = {}) {
+
+    
+    this._state = StateStore.initState(this, initValues)
+
+    typeof callback == 'function' && callback({ ...this._state });
+
   }
 }
 
