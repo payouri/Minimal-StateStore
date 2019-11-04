@@ -20,16 +20,21 @@ const s = new StateStore({
     handlers: {
         test: (test) => {
             console.log('dsqdq', test)
-        }
+        },
+        test2: ({ value }) => { console.log('state after modifying test2', value) }
     }
 });
+
+s.onStateChange = function() {
+    console.log('onStateChange')
+}
 
 s.setState({
     qdqd: 232,
     test: 'dqsdq',
     phone: '0677332211'
 }, stateObj => {
-    console.log(stateObj)
+    console.log('setState', stateObj)
 })
 //for sub objects adding more property than declared in the model doesn't raise an err
 s.setState({
@@ -41,7 +46,7 @@ s.setState({
         e: false
     }
 }, stateObj => {
-    console.log(stateObj)
+    console.log('setState', stateObj)
 })
 //for sub objects if one of the declared prop model fails to validate the entire sub object will be rejected
 s.setState({
@@ -55,3 +60,7 @@ s.setState({
 }, stateObj => {
     console.log(stateObj)
 })
+s.clearState((state) => { console.log('after clearState', state) })
+
+//initValues behave as 
+s.clearState((state) => { console.log('after clearState with initValues', state) }, { test2: { a: '500' }})

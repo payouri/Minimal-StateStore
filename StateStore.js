@@ -12,6 +12,18 @@ Object.defineProperty(Validators, 'testVal', {
   writable: false,
   
 });
+
+const getDiffs = function (o1, o2) {
+  return Object.keys(o2).reduce((diff, key) => {
+      if (o1[key] === o2[key]) return diff
+      return {
+          ...diff,
+          [key]: o2[key]
+      }
+  }, {})
+};
+
+
 /**
  * @typedef StateStoreModel
  * @property {Object} Model object to validate
@@ -108,17 +120,52 @@ class StateStore {
         console.warn(prop + obj[prop].toString() + ', is not a valid handler')
       }
     }
+    Object.defineProperties(h, {
+      'trigger': {
+        value: function(handlers, ...args) {
+          if(typeof handlers == 'string' && typeof this[StateStore._getHandlerName(handlers)] == 'function') {
+            this[StateStore._getHandlerName(handlers)](...args)
+          }
+          else if(Array.isArray(handlers)) {
+            for(let hdlr of handlers) {
+              if(typeof this[StateStore._getHandlerName(hdlr)] == 'function')
+                this[StateStore._getHandlerName(hdlr)](...args)
+            }
+          }
+        },
+        writable: false,
+      },
+      '_onStateChanged': {
+        value: null,
+        writable: true,
+        configurable: false,
+      },
+      'onStateChanged': {
+        set: function(v) {
+          if(typeof v == 'function') {
+            this['_onStateChanged'] = v
+            return true;
+          }
+          return false;
+        },
+        get: function() {
+          return this._onStateChanged;
+        },
+      }
+    })
     return h;
   }
   static _getHandlerName(name) {
     return `on${name[0].toUpperCase() + name.substring(1)}StateChange`
   }
   static initState(instance, state) {
-    return new Proxy(state || instance._state || {}, {
+    const stateMachine = new Proxy(state || instance._state || {}, {
       set: (rawStateObj, prop, value) => {
         
         const oldValue = rawStateObj[prop] ? ({...rawStateObj})[prop] : null,
               model = instance._model;
+
+        instance._prevState = { ...rawStateObj };
 
         if(!model || model.checkValid(prop, value))
           rawStateObj[prop] = value;
@@ -126,7 +173,7 @@ class StateStore {
           console.warn(`${value} isn't a valid value for ${prop} property`);
         
         const handlerName = StateStore._getHandlerName(prop);
-        
+
         typeof instance._handlers[handlerName] == 'function' && 
           instance._handlers[handlerName]({oldValue, value: rawStateObj[prop]});
         
@@ -139,9 +186,18 @@ class StateStore {
 
       }
     })
+
+    // Object.defineProperty('')
+    return stateMachine;
   }
   deleteHandler(state) {
     delete this._handlers[StateStore._getHandlerName(state)];
+  }
+  set onStateChange(fn) {
+    return this._handlers.onStateChanged = fn;
+  }
+  get onStateChange() {
+    return this._handlers.onStateChange;
   }
   setHandler(state, handler) {
     if(typeof handler == 'function') {
@@ -175,6 +231,12 @@ class StateStore {
         this._state[state] = stateObj[state];
       }
       
+      const diffs = getDiffs(oldState, { ...this._state })
+
+      if(Object.keys(diffs).length > 0)
+        typeof this._handlers.onStateChanged == 'function' && this._handlers.onStateChanged({ ...diffs })
+      
+
       typeof callback == 'function' && callback({ oldState, state: {...this._state}});
       
       return true
@@ -186,10 +248,12 @@ class StateStore {
     }
 
   }
-  clearState(callback, initValues = {}) {
+  clearState(callback, initValues) {
 
     
-    this._state = StateStore.initState(this, initValues)
+    this._state = StateStore.initState(this, {})
+    if(initValues)
+      this.setState(initValues)
 
     typeof callback == 'function' && callback({ ...this._state });
 
