@@ -178,3 +178,5 @@ class StateStore {
     }
   }
 }
+
+export default StateStore;

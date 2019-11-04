@@ -178,3 +178,5 @@ class StateStore {
     }
   }
 }
+
+module.exports = StateStore;
