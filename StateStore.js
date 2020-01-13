@@ -1,89 +1,6 @@
 import { EventDispatcher } from './EventDispatcher'
-
-const Validators = {}
-export const _KEY = Symbol.for('StateStore.key')
-
-export const getDiffs = (o1, o2) => {
-    return Object.keys(o2).reduce((diff, key) => {
-        if (Array.isArray(o1[key]) && Array.isArray(o2[key])) {
-            const arr1 = o1[key]
-            const arr2 = o2[key]
-            if (arr1.length !== arr2.length) {
-                return {
-                    ...diff,
-                    [key]: o2[key],
-                }
-            } else {
-                for (let i = 0, n = arr1.length; i < n; i++) {
-                    if (arr1[i] === arr2[i] ||
-                        (typeof arr1[i][_KEY] !== 'undefined' &&
-                            arr1[i][_KEY] === arr2[i][_KEY])) {
-                        continue
-                    } else {
-                        return {
-                            ...diff,
-                            [key]: o2[key],
-                        }
-                    }
-                }
-                return diff
-            }
-        }
-        if (o1[key] === o2[key]) return diff
-        return {
-            ...diff,
-            [key]: o2[key]
-        }
-    }, {})
-}
-
-export class StateModel {
-    constructor(fields = null, { lousyValidation = false } = {}) {
-        this._lousy = !!lousyValidation
-        this._fields = fields
-    }
-    toggleLousy() {
-        this._lousy = !this._lousy
-    }
-    get fields() {
-        return this._fields
-    }
-    checkValid(prop, value, fields) {
-
-        const propToValidate = typeof fields == 'object' && fields[prop] || this._fields[prop]
-
-        if (this._lousy && !propToValidate)
-            return true
-
-        else if (!this._lousy && !propToValidate)
-            return false
-
-        else {
-            if (typeof propToValidate == 'object' && !Array.isArray(propToValidate)) {
-                for (let p in propToValidate) {
-                    if (!this.checkValid(p, value[p], propToValidate))
-                        return false
-                }
-                return true
-            }
-            else if (Array.isArray(propToValidate) && (propToValidate.indexOf(value) > -1 || propToValidate.indexOf(typeof value) > -1))
-                return true
-
-            else if (Validators[propToValidate])
-                return Validators.testVal(propToValidate, value)
-
-            else if (propToValidate instanceof RegExp && propToValidate.test(value))
-                return true
-
-            else if (typeof propToValidate == 'string' && typeof value === propToValidate)
-                return true
-
-            else
-                return false
-        }
-
-    }
-}
+import { StateModel } from './StateModel'
+import { _KEY, getDiffs } from './getDiffs'
 
 const createStateChangeEvent = params => new CustomEvent('statechange', { detail: params })
 
@@ -127,14 +44,14 @@ export class StateStore {
         return false
     }
     setHandler(state, handler) {
-        if(typeof handler == 'function') {
-          this._handlers[state] = handler;
-          return true;
+        if (typeof handler == 'function') {
+            this._handlers[state] = handler;
+            return true;
         }
         else {
-          if(StateStore.enableWarnings)
-            console.warn(`cannot set ${state} handler ${handler.toString()} isn't a valid value`);
-          return false;
+            if (StateStore.enableWarnings)
+                console.warn(`cannot set ${state} handler ${handler.toString()} isn't a valid value`);
+            return false;
         }
     }
     setState(stateObj, callback) {
@@ -151,10 +68,13 @@ export class StateStore {
                 else
                     this._state[state] = stateObj[state]
             }
-            if(this._changedState.length > 0) {
-                for(let i = 0, n = this._changedState.length; i < n; i++) {
+
+            const state = { ...this.state }
+
+            if (this._changedState.length > 0) {
+                for (let i = 0, n = this._changedState.length; i < n; i++) {
                     const [stateName, values] = this._changedState[i]
-                    typeof this._handlers[stateName] == 'function' && this._handlers[stateName](values)
+                    typeof this._handlers[stateName] == 'function' && this._handlers[stateName]({ ...values, store: state })
                 }
                 this._changedState = []
             }
@@ -162,11 +82,11 @@ export class StateStore {
             const diffs = getDiffs(oldState, { ...this._state })
 
             if (Object.keys(diffs).length > 0) {
-                typeof this._onStateChange == 'function' && this._onStateChange({ oldState, state: { ...this._state }, differences: diffs })
-                this._eventStore.dispatchEvent(createStateChangeEvent({ oldState, state: { ...this._state }, differences: diffs }))
+                typeof this._onStateChange == 'function' && this._onStateChange({ oldState, state, differences: diffs })
+                this._eventStore.dispatchEvent(createStateChangeEvent({ oldState, state, differences: diffs }))
             }
 
-            typeof callback == 'function' && callback({ oldState, state: { ...this._state }, differences: diffs })
+            typeof callback == 'function' && callback({ oldState, state, differences: diffs })
 
             return true
         }
@@ -184,7 +104,7 @@ export class StateStore {
 
                 if (!model.fields || model.checkValid(prop, value)) {
                     rawStateObj[prop] = value
-                    instance._changedState[instance._changedState.length] = [prop, {oldValue, value: rawStateObj[prop]}]
+                    instance._changedState[instance._changedState.length] = [prop, { oldValue, value: rawStateObj[prop] }]
                 } else if (StateStore.enableWarnings)
                     console.warn(`${value} isn't a valid value for ${prop} field`)
 

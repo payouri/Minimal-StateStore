@@ -2,7 +2,8 @@ import {
     getDiffs,
     StateStore,
     _KEY
-} from './StateStore'
+} from './index'
+
 const onStateChange = ({
     detail
 }) => detail
