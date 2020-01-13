@@ -12,7 +12,10 @@ const stateStore = new StateStore({
   handlers: {
   //this property holds functions that will be called when the associated state changes
   },
-  lousyModel: Boolean // default to false
+  modelOptions: {
+    lousyValidation: Boolean, // default to false
+  },
+  onStateChange: Function // triggered only if the new state is different from the previous one
 });
 ```
 
@@ -21,9 +24,17 @@ const stateStore = new StateStore({
 ## State Property
 The state property allow you to store initial values while initializing the store
 States can be updated using the stateStoreInstance.setState method, they can also be retrieved using the stateStoreInstance.state property
+exemple of initialisation:
+```javascript
+  state: {
+    name: 'John Doe',
+    age: 29,
+  }
+``` 
+**Note:** initial values won't be checked against the model
 
 ## Model Property
-The model property allow you to validate data before setting state
+The model property allow you to validate data before setting state  
 It can be: 
 ### a regexp
 ```javascript
@@ -51,12 +62,34 @@ It can be:
     status: [0, 1, 2, 3]
   }
 ```
-### LousyModel property
-if stateStoreInstance is initialized with new StateStore({..., lousyModel: true}) it will be possible to update states that werent declared on stateStoreInstance init
+### modelOptions.lousyValidation property
+if stateStoreInstance is initialized with new StateStore({..., modelOptions = { lousyValidation: true, }}) it will be possible to update states that were not declared on stateStoreInstance init
 
 ## Handlers Property
 handlers function are named after state so they can be triggered when a state is updated
+**Note:** Handlers will be triggered after all state modifications occurred
 
+## Methods
+### setState
+setState function is the only way to update the stored values
+```javascript
+stateStoreInstance.setState({
+  property: value
+}, ({ differences, oldState, state }) => {
+  differences //object containing only the updated states
+  olState //object previous state of the store
+  state //object actual state of the store
+})
+```
+### clearState
+### toggleLousyValidation
+toggleLousyValidation allow you to switch the mode of state validation
+when the value is true, state not declared in the model will be updatable
+when set to false only the properties set to false only state declared in the model will be updatable
+```javascript
+  const enabled = stateStore.toggleLousyValidation
+  console.log(enabled) //true || false
+```
 ## Working exemple
 ```javascript
 const stateStore = new StateStore({
@@ -67,8 +100,30 @@ const stateStore = new StateStore({
     name: 'string'
   },
   handlers: {
-  //this property holds functions that will be called when the associated state changes
+    name: ({ oldValue, value }) => {
+      alert('Hello, ' + value)
+      console.log(stateStore.state.value)
+    }
   },
-  lousyModel: Boolean // default to false
 });
+
+stateStore.setState({
+  name: 'John Doe',
+  age: 18,
+}, ({ differences, oldState, state }) => {
+  console.log(difference) // { name: 'John Doe' }
+  console.log(oldState) // { name: '' }
+  console.log(state) // { name: 'John Doe' }
+})
+
+const enabled = stateStore.toggleLousyValidation()
+console.log(enabled) // true
+stateStore.setState({
+  age: 18
+},  ({ differences, oldState, state }) => {
+  console.log(difference) // { age: '18' }
+  console.log(oldState) // { name: 'John Doe' }
+  console.log(state) // { name: 'John Doe', age: 18 }
+})
+
 ```
