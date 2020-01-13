@@ -1,8 +1,8 @@
 {
   "name": "@youri-kane/minimal-statestore",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "a minimal state store, trigger handlers on state update and with optional state validation",
-  "main": "StateStrore.module.js",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
     "test-verbose": "jest --coverage --config ./jest.config.js"

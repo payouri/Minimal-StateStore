@@ -5,7 +5,7 @@ import { _KEY, getDiffs } from './getDiffs'
 const createStateChangeEvent = params => new CustomEvent('statechange', { detail: params })
 
 export class StateStore {
-    constructor({ state = {}, model, modelOptions = {}, handlers, onStateChange } = {}) {
+    constructor({ state = {}, model, modelOptions = { lousyValidation: false, }, handlers, onStateChange } = {}) {
         this._eventStore = new EventDispatcher()
         this._state = StateStore._initState(this, state)
         this._model = new StateModel(model, modelOptions)
