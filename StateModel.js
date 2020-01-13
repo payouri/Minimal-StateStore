@@ -31,16 +31,15 @@ export class StateModel {
             }
             else if (Array.isArray(propToValidate) && (propToValidate.indexOf(value) > -1 || propToValidate.indexOf(typeof value) > -1))
                 return true
-
             else if (Validators[propToValidate])
                 return Validators.testVal(propToValidate, value)
-
+            else if (typeof propToValidate == 'function') {
+                return propToValidate(value)
+            }
             else if (propToValidate instanceof RegExp && propToValidate.test(value))
                 return true
-
             else if (typeof propToValidate == 'string' && typeof value === propToValidate)
                 return true
-
             else
                 return false
         }
