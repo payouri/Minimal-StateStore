@@ -54,6 +54,10 @@ export class StateStore {
             return false;
         }
     }
+    clearState(stateObj = {}, callback) {
+        this._state = StateStore._initState(this, stateObj)
+        typeof callback == 'function' && callback()
+    }
     setState(stateObj, callback) {
         if (typeof stateObj == 'object') {
 
