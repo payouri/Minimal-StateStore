@@ -1,0 +1,213 @@
+import { EventDispatcher } from './EventDispatcher'
+
+const Validators = {}
+export const _KEY = Symbol.for('StateStore.key')
+
+export const getDiffs = (o1, o2) => {
+    return Object.keys(o2).reduce((diff, key) => {
+        if (Array.isArray(o1[key]) && Array.isArray(o2[key])) {
+            const arr1 = o1[key]
+            const arr2 = o2[key]
+            if (arr1.length !== arr2.length) {
+                return {
+                    ...diff,
+                    [key]: o2[key],
+                }
+            } else {
+                for (let i = 0, n = arr1.length; i < n; i++) {
+                    if (arr1[i] === arr2[i] ||
+                        (typeof arr1[i][_KEY] !== 'undefined' &&
+                            arr1[i][_KEY] === arr2[i][_KEY])) {
+                        continue
+                    } else {
+                        return {
+                            ...diff,
+                            [key]: o2[key],
+                        }
+                    }
+                }
+                return diff
+            }
+        }
+        if (o1[key] === o2[key]) return diff
+        return {
+            ...diff,
+            [key]: o2[key]
+        }
+    }, {})
+}
+
+export class StateModel {
+    constructor(fields = null, { lousyValidation = false } = {}) {
+        this._lousy = !!lousyValidation
+        this._fields = fields
+    }
+    toggleLousy() {
+        this._lousy = !this._lousy
+    }
+    get fields() {
+        return this._fields
+    }
+    checkValid(prop, value, fields) {
+
+        const propToValidate = typeof fields == 'object' && fields[prop] || this._fields[prop]
+
+        if (this._lousy && !propToValidate)
+            return true
+
+        else if (!this._lousy && !propToValidate)
+            return false
+
+        else {
+            if (typeof propToValidate == 'object' && !Array.isArray(propToValidate)) {
+                for (let p in propToValidate) {
+                    if (!this.checkValid(p, value[p], propToValidate))
+                        return false
+                }
+                return true
+            }
+            else if (Array.isArray(propToValidate) && (propToValidate.indexOf(value) > -1 || propToValidate.indexOf(typeof value) > -1))
+                return true
+
+            else if (Validators[propToValidate])
+                return Validators.testVal(propToValidate, value)
+
+            else if (propToValidate instanceof RegExp && propToValidate.test(value))
+                return true
+
+            else if (typeof propToValidate == 'string' && typeof value === propToValidate)
+                return true
+
+            else
+                return false
+        }
+
+    }
+}
+
+const createStateChangeEvent = params => new CustomEvent('statechange', { detail: params })
+
+export class StateStore {
+    constructor({ state = {}, model, modelOptions = {}, handlers, onStateChange } = {}) {
+        this._eventStore = new EventDispatcher()
+        this._state = StateStore._initState(this, state)
+        this._model = new StateModel(model, modelOptions)
+        this._handlers = StateStore._initHandlers(handlers)
+        this._changedState = []
+        this._onStateChange = onStateChange
+    }
+    toggleLousyValidation() {
+        this._model.toggleLousy()
+        return this._model._lousy
+    }
+    on(event, fn) {
+        this._eventStore.addEventListener(event, fn)
+    }
+    off(event, fn) {
+        this._eventStore.removeEventListener(event, fn)
+    }
+    set onStateChange(fn) {
+        return this._onStateChanged = fn
+    }
+    get onStateChange() {
+        return this._onStateChange
+    }
+    get model() {
+        return this._model.fields
+    }
+    get handlers() {
+        return this._handlers ? this._handlers : {}
+    }
+    get state() {
+        return { ...this._state }
+    }
+    set state(val) {
+        if (StateStore.enableWarnings)
+            console.warn('cannot set state using StateStoreInstance.state use StateStoreInstance.setState instead')
+        return false
+    }
+    setHandler(state, handler) {
+        if(typeof handler == 'function') {
+          this._handlers[state] = handler;
+          return true;
+        }
+        else {
+          if(StateStore.enableWarnings)
+            console.warn(`cannot set ${state} handler ${handler.toString()} isn't a valid value`);
+          return false;
+        }
+    }
+    setState(stateObj, callback) {
+        if (typeof stateObj == 'object') {
+
+            const oldState = { ...this._state }
+
+            for (let state in stateObj) {
+                if (Array.isArray(stateObj[state]))
+                    this._state[state] = stateObj[state].map((item, index) => {
+                        item[_KEY] = item._KEY ? item._KEY : 'key' + index
+                        return item
+                    })
+                else
+                    this._state[state] = stateObj[state]
+            }
+            if(this._changedState.length > 0) {
+                for(let i = 0, n = this._changedState.length; i < n; i++) {
+                    const [stateName, values] = this._changedState[i]
+                    typeof this._handlers[stateName] == 'function' && this._handlers[stateName](values)
+                }
+                this._changedState = []
+            }
+
+            const diffs = getDiffs(oldState, { ...this._state })
+
+            if (Object.keys(diffs).length > 0) {
+                typeof this._onStateChange == 'function' && this._onStateChange({ oldState, state: { ...this._state }, differences: diffs })
+                this._eventStore.dispatchEvent(createStateChangeEvent({ oldState, state: { ...this._state }, differences: diffs }))
+            }
+
+            typeof callback == 'function' && callback({ oldState, state: { ...this._state }, differences: diffs })
+
+            return true
+        }
+        else {
+            if (StateStore.enableWarnings)
+                console.warn(`${stateObj} isn't an object`)
+            return false
+        }
+    }
+    static _initState(instance, state) {
+        const stateMachine = new Proxy(state || instance._state || {}, {
+            set: (rawStateObj, prop, value) => {
+                const oldValue = typeof rawStateObj[prop] !== 'undefined' ? ({ ...rawStateObj })[prop] : null,
+                    model = instance._model
+
+                if (!model.fields || model.checkValid(prop, value)) {
+                    rawStateObj[prop] = value
+                    instance._changedState[instance._changedState.length] = [prop, {oldValue, value: rawStateObj[prop]}]
+                } else if (StateStore.enableWarnings)
+                    console.warn(`${value} isn't a valid value for ${prop} field`)
+
+                return true
+
+            },
+            get: (rawStateObj, prop) => {
+                return typeof rawStateObj[prop] !== 'undefined' ? rawStateObj[prop] : null
+            }
+        })
+        return stateMachine
+    }
+    static _initHandlers(handlers) {
+        const h = {}
+        for (const handler in handlers) {
+            if (typeof handlers[handler] == 'function') {
+                h[handler] = handlers[handler]
+            } else if (StateStore.enableWarnings) {
+                console.warn(`${handler}:${handlers[handler].toString()} is not a valid handler`)
+            }
+        }
+        return h
+    }
+}
+
+export default StateStore

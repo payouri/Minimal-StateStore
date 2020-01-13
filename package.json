@@ -4,7 +4,8 @@
   "description": "a minimal state store, trigger handlers on state update and with optional state validation",
   "main": "StateStrore.module.js",
   "scripts": {
-    "test": "node ./StateStore.test.js"
+    "test": "jest",
+    "test-verbose": "jest --coverage --config ./jest.config.js"
   },
   "repository": {
     "type": "git",
@@ -14,6 +15,13 @@
     "state",
     "simple"
   ],
+  "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/preset-env": "^7.7.5",
+    "babel-jest": "^24.9.0",
+    "canvas": "^2.6.0",
+    "jest": "^24.9.0"
+  },
   "author": "Youri Pailloux",
   "license": "MIT",
   "bugs": {
