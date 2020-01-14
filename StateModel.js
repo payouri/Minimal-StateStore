@@ -21,7 +21,7 @@ export class StateModel {
         this.fields[model] = value
     }
     get fields() {
-        return this._fields
+        return this._fields ? { ...this._fields } : null
     }
     checkValid(prop, value, fields) {
 

@@ -2,16 +2,20 @@ import { EventDispatcher } from './EventDispatcher'
 import { StateModel } from './StateModel'
 import { _KEY, getDiffs } from './getDiffs'
 
+const createCreatedEvent = params => new CustomEvent('created', { detail: params })
 const createStateChangeEvent = params => new CustomEvent('statechange', { detail: params })
 
 export class StateStore {
-    constructor({ state = {}, model, modelOptions = { lousyValidation: false, }, handlers, onStateChange } = {}) {
+    constructor({ namespace = '', state = {}, model, modelOptions = { lousyValidation: false, }, handlers, onStateChange } = {}) {
+        this._storeName = namespace || 'store-' + Object.keys(StateStore.stores).length
         this._eventStore = new EventDispatcher()
         this._state = StateStore._initState(this, state)
         this._model = new StateModel(model, modelOptions)
         this._handlers = StateStore._initHandlers(handlers)
         this._changedState = []
         this._onStateChange = onStateChange
+        StateStore.stores[this._storeName] = this
+        this._eventStore.dispatchEvent(createCreatedEvent({ state: { ...this._state } }))
     }
     toggleLousyValidation() {
         this._model.toggleLousy()
@@ -109,6 +113,7 @@ export class StateStore {
             return false
         }
     }
+    static stores = {}
     static _initState(instance, state) {
         const stateMachine = new Proxy(state || instance._state || {}, {
             set: (rawStateObj, prop, value) => {
