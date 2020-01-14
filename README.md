@@ -20,6 +20,7 @@ const stateStore = new StateStore({
 ```
 
 ## State, Model and Handlers relationship
+setState => Model Validation => State Update => Trigger Handler
 
 ## State Property
 The state property allow you to store initial values while initializing the store
@@ -68,7 +69,15 @@ if stateStoreInstance is initialized with new StateStore({..., modelOptions = { 
 ## Handlers Property
 handlers function are named after state so they can be triggered when a state is updated
 **Note:** Handlers will be triggered after all state modifications occurred
-
+```javascript
+  handlers: {
+    name: ({ oldValue, value, store }) => {
+      console.log(oldValue) // previous state value
+      console.log(value) // current state value
+      console.log(store) // current state of the store
+    }
+  }
+```
 ## Methods
 ### setState
 setState function is the only way to update the stored values
@@ -82,6 +91,12 @@ stateStoreInstance.setState({
 })
 ```
 ### clearState
+clearState function allows you to empty/reset the state without triggering any handler
+```javascript
+stateStoreInstance.clearState({props: 'value to reset', prop2: 'value to reset'} /* defaults to an empty object */, () => {
+  //doesn't get any params
+})
+```
 ### toggleLousyValidation
 toggleLousyValidation allow you to switch the mode of state validation
 when the value is true, state not declared in the model will be updatable

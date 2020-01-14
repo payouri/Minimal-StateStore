@@ -8,6 +8,18 @@ export class StateModel {
     toggleLousy() {
         this._lousy = !this._lousy
     }
+    destroyFields() {
+        this._fields = null
+    }
+    unsetModel(model) {
+        delete this._fields[model]
+    }
+    setModel(model, value) {
+        if(!this._fields) {
+            this._fields = {}
+        }
+        this.fields[model] = value
+    }
     get fields() {
         return this._fields
     }

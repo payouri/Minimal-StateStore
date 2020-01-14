@@ -43,6 +43,15 @@ export class StateStore {
             console.warn('cannot set state using StateStoreInstance.state use StateStoreInstance.setState instead')
         return false
     }
+    unsetModelField(field) {
+        this._model.unsetModel(field)
+    }
+    setModelField(field, model) {
+        this._model.setModel(field, model)
+    }
+    unsetHandler(state) {
+        this._handlers[state] = null
+    }
     setHandler(state, handler) {
         if (typeof handler == 'function') {
             this._handlers[state] = handler;
@@ -50,7 +59,7 @@ export class StateStore {
         }
         else {
             if (StateStore.enableWarnings)
-                console.warn(`cannot set ${state} handler ${handler.toString()} isn't a valid value`);
+                console.warn(`cannot set ${state} handler ${handler.toString()} isn't a valid function`);
             return false;
         }
     }
