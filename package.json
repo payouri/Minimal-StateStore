@@ -1,6 +1,6 @@
 {
   "name": "@youri-kane/minimal-statestore",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "a minimal state data store, able to validate data before storage and to fire callbacks on data update",
   "main": "dist/minimal-statestore.js",
   "module": "src/index.js",
