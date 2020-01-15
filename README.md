@@ -1,8 +1,13 @@
 # Minimal-StateStore
-store data and trigger functions on value update
+Store data and trigger state updates
+Optional data validation
+
+Uses ES6 Proxy
+![can i use proxy table](https://caniuse.bitsofco.de/image/proxy.png)
 
 ```javascript
 const stateStore = new StateStore({
+  namespace: String //optional store name
   state: {
   //data value that will be observed
   },
@@ -20,7 +25,7 @@ const stateStore = new StateStore({
 ```
 
 ## State, Model and Handlers relationship
-setState => Model Validation => State Update => Trigger Handler
+setState => Model Validation() => State Update => Trigger Handler
 
 ## State Property
 The state property allow you to store initial values while initializing the store
@@ -105,6 +110,59 @@ when set to false only the properties set to false only state declared in the mo
   const enabled = stateStore.toggleLousyValidation
   console.log(enabled) //true || false
 ```
+### on
+```javascript
+  const onStateChange = event => void console.log(event)
+  stateStoreInstance.on('statechange', onStateChange)
+```
+### off
+```javascript
+  stateStoreInstance.off('statechange', onStateChange)
+```
+### setModelField
+```javascript
+  stateStoreInstance.setModelField('fieldname', fieldModel)
+  console.log(stateStoreInstance.model.fieldname) // fieldModel
+```
+### unsetModelField
+```javascript
+  stateStoreInstance.unsetModelField('fieldname')
+  console.log(stateStoreInstance.model.fieldname) // undefined
+```
+### setHandler
+  add state handler
+```javascript
+  stateStoreInstance.setHandler('fieldname', Function)
+```
+### unsetHandler
+  remove state handler
+```javascript
+  stateStoreInstance.unsetModelField('fieldname')
+```
+
+## Events
+### created
+created event is fired when new StateStore instance is created
+```javascript
+  stateStoreInstance.on('created', event => {
+    console.log(event.detail) // { state: initial state, storeName: name of the created store }
+  })
+```
+### statechange
+statechange event is fired when the previous state is different form the current state
+```javascript
+  stateStoreInstance.on('statechange', event => {
+    console.log(event.detail) // { state: current state, oldState: previous state, differences: states that changed }
+  })
+```
+### validationfail
+validationfail event is fired when a state update has failed model validation
+```javascript
+  stateStoreInstance.on('validationfail', event => {
+    console.log(event.detail) // { state: state that failed to update, rejected: value that failed to validate }
+  })
+```
+
 ## Working exemple
 ```javascript
 const stateStore = new StateStore({
