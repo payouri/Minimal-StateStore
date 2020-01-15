@@ -6,14 +6,14 @@ export const frenchSiren = RegExp(/((\d|\s){9,})$/)
 export const RegExpValidators = {
     frenchPhone,
     email,
-    zipcode,
-    siren,
+    frenchZipcode,
+    frenchSiren,
 }
 
 export default {
     frenchPhone,
     email,
-    zipcode,
-    siren,
+    frenchZipcode,
+    frenchSiren,
     RegExpValidators
 }
