@@ -3,13 +3,12 @@ export const email = RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z](?:[a-zA-
 export const frenchZipcode = RegExp(/^\d{5}(?:[-\s]\d{4})?$/)
 export const frenchSiren = RegExp(/((\d|\s){9,})$/)
 
-const RegExpValidators = {
+export const RegExpValidators = {
     frenchPhone,
     email,
     zipcode,
     siren,
 }
-export const RegExpValidators
 
 export default {
     frenchPhone,
