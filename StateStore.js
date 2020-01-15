@@ -4,9 +4,46 @@ import { _KEY, getDiffs } from './getDiffs'
 
 const createCreatedEvent = params => new CustomEvent('created', { detail: params })
 const createStateChangeEvent = params => new CustomEvent('statechange', { detail: params })
+const createValidationFailEvent = params => new CustomEvent('validationfail', { detail: params })
 
 export class StateStore {
-    constructor({ namespace = '', state = {}, model, modelOptions = { lousyValidation: false, }, handlers, onStateChange } = {}) {
+    static stores = {
+
+    }
+    static _initState(instance, state) {
+        return new Proxy(state || instance._state || {}, {
+            set: (rawStateObj, prop, value) => {
+                const oldValue = typeof rawStateObj[prop] !== 'undefined' ? ({ ...rawStateObj })[prop] : null,
+                    model = instance._model
+                if (!model.fields || model.checkValid(prop, value)) {
+                    rawStateObj[prop] = value
+                    instance._changedState[instance._changedState.length] = [prop, { oldValue, value: rawStateObj[prop] }]
+                } else {
+                    this._eventStore.dispatchEvent(createValidationFailEvent({ state: prop, rejected: value }))
+                    typeof this._onValidationFail == 'function' && this._onValidationFail({ state: prop, rejected: value })
+                    if (StateStore.enableWarnings) {
+                        console.warn(`${value} isn't a valid value for ${prop} field`)
+                    }
+                }
+                return true
+            },
+            get: (rawStateObj, prop) => {
+                return typeof rawStateObj[prop] !== 'undefined' ? rawStateObj[prop] : null
+            }
+        })
+    }
+    static _initHandlers(handlers) {
+        const h = {}
+        for (const handler in handlers) {
+            if (typeof handlers[handler] == 'function') {
+                h[handler] = handlers[handler]
+            } else if (StateStore.enableWarnings) {
+                console.warn(`${handler}:${handlers[handler].toString()} is not a valid handler`)
+            }
+        }
+        return h
+    }
+    constructor({ namespace = '', state = {}, model, modelOptions = { lousyValidation: false, }, handlers, onStateChange, onValidationFail } = {}) {
         this._storeName = namespace || 'store-' + Object.keys(StateStore.stores).length
         this._eventStore = new EventDispatcher()
         this._state = StateStore._initState(this, state)
@@ -14,9 +51,19 @@ export class StateStore {
         this._handlers = StateStore._initHandlers(handlers)
         this._changedState = []
         this._onStateChange = onStateChange
+        this._onValidationFail = onValidationFail
         StateStore.stores[this._storeName] = this
-        this._eventStore.dispatchEvent(createCreatedEvent({ state: { ...this._state } }))
+        this._eventStore.dispatchEvent(createCreatedEvent({ state: { ...this._state }, storeName: this._storeName }))
     }
+    /*     dismantle() {
+            this._eventStore.removeEventListeners()
+            this._state = StateStore._initState(this, {})
+            this._model = new StateModel({}, { lousyValidation: false, })
+            this._handlers = StateStore._initHandlers({})
+            this._changedState = []
+            this._onStateChange = undefined
+            this._onValidationFail = undefined
+        } */
     toggleLousyValidation() {
         this._model.toggleLousy()
         return this._model._lousy
@@ -28,10 +75,22 @@ export class StateStore {
         this._eventStore.removeEventListener(event, fn)
     }
     set onStateChange(fn) {
-        return this._onStateChanged = fn
+        if (typeof fn == 'function')
+            return this._onStateChange = fn
+        else if (StateStore.enableWarnings)
+            console.warn(`${fn} is not a function`)
     }
     get onStateChange() {
         return this._onStateChange
+    }
+    set onValidationFail(fn) {
+        if (typeof fn == 'function')
+            return this._onValidationFail = fn
+        else if (StateStore.enableWarnings)
+            console.warn(`${fn} is not a function`)
+    }
+    get onValidationFail() {
+        return this._onValidationFail
     }
     get model() {
         return this._model.fields
@@ -96,11 +155,11 @@ export class StateStore {
                 this._changedState = []
             }
 
-            const diffs = getDiffs(oldState, { ...this._state })
+            const diffs = getDiffs(oldState, state)
 
             if (Object.keys(diffs).length > 0) {
-                typeof this._onStateChange == 'function' && this._onStateChange({ oldState, state, differences: diffs })
                 this._eventStore.dispatchEvent(createStateChangeEvent({ oldState, state, differences: diffs }))
+                typeof this._onStateChange == 'function' && this._onStateChange({ oldState, state, differences: diffs })
             }
 
             typeof callback == 'function' && callback({ oldState, state, differences: diffs })
@@ -112,39 +171,6 @@ export class StateStore {
                 console.warn(`${stateObj} isn't an object`)
             return false
         }
-    }
-    static stores = {}
-    static _initState(instance, state) {
-        const stateMachine = new Proxy(state || instance._state || {}, {
-            set: (rawStateObj, prop, value) => {
-                const oldValue = typeof rawStateObj[prop] !== 'undefined' ? ({ ...rawStateObj })[prop] : null,
-                    model = instance._model
-
-                if (!model.fields || model.checkValid(prop, value)) {
-                    rawStateObj[prop] = value
-                    instance._changedState[instance._changedState.length] = [prop, { oldValue, value: rawStateObj[prop] }]
-                } else if (StateStore.enableWarnings)
-                    console.warn(`${value} isn't a valid value for ${prop} field`)
-
-                return true
-
-            },
-            get: (rawStateObj, prop) => {
-                return typeof rawStateObj[prop] !== 'undefined' ? rawStateObj[prop] : null
-            }
-        })
-        return stateMachine
-    }
-    static _initHandlers(handlers) {
-        const h = {}
-        for (const handler in handlers) {
-            if (typeof handlers[handler] == 'function') {
-                h[handler] = handlers[handler]
-            } else if (StateStore.enableWarnings) {
-                console.warn(`${handler}:${handlers[handler].toString()} is not a valid handler`)
-            }
-        }
-        return h
     }
 }
 
