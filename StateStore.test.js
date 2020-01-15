@@ -1,6 +1,6 @@
 import {
-    getDiffs,
     StateStore,
+    StateModel,
     _KEY
 } from './index'
 
@@ -29,6 +29,7 @@ const ss = new StateStore({
         testProp: 'string',
         testProp2: 'number',
         testProp3: ['string', 'number'],
+        array: 'object',
         subObject: {
             prop1: 'number',
             prop2: 'function',
@@ -64,7 +65,19 @@ test('StateStore state is not mutable', () => {
 })
 
 test('StateStore model init', () => {
+    expect(ss._model).toBeInstanceOf(StateModel)
+})
+
+test('stateStore toggle model validation mode', () => {
+    let mode = ss.toggleLousyValidation()
+    expect(mode).toBe(true)
+    mode = ss.toggleLousyValidation()
+    expect(mode).toBe(false)
+})
+
+test('stateStore model get fields', () => {
     expect(ss.model).toStrictEqual({
+        array: 'object',
         testProp: 'string',
         testProp2: 'number',
         testProp3: ['string', 'number'],
@@ -72,7 +85,7 @@ test('StateStore model init', () => {
             prop1: 'number',
             prop2: 'function',
             prop3: 'boolean',
-        }
+        } 
     })
 })
 
@@ -82,72 +95,22 @@ test('StateStore handlers init', () => {
     })
 })
 
-test('StateStore model type validation', () => {
-    ss.setState({
-        testProp2: 2
-    })
-    ss.setState({
-        testProp2: 'bbb'
-    })
-    expect(ss.state).toStrictEqual({
-        testProp: 'aaa',
-        testProp2: 2
+test('StateStore set handler', () => {
+    ss
+    expect(ss.handlers).toStrictEqual({
+        testProp2: testProp2
     })
 })
 
-test('StateStore model field rejection', () => {
-    ss.setState({
-        testProp5: 2
-    })
-    ss.setState({
-        testProp4: 'bbb'
-    })
-    expect(ss.state).toStrictEqual({
-        testProp: 'aaa',
-        testProp2: 2
-    })
-})
 
-const prop2 = () => { }
-test('StateStore model subObject validation', () => {
-    ss.setState({
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        }
-    })
-    expect(ss.state).toStrictEqual({
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        },
-        testProp: 'aaa',
-        testProp2: 2,
-    })
-})
-
-test('StateStore model lousy validation', () => {
-    let lousyMode = ss.toggleLousyValidation()
-    expect(lousyMode).toBe(true)
-    ss.setState({
-        testProp5: 2,
-        testProp4: 'bbb'
-    })
-    expect(ss.state).toStrictEqual({
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        },
-        testProp: 'aaa',
-        testProp2: 2,
-        testProp4: 'bbb',
-        testProp5: 2
-    })
-    lousyMode = ss.toggleLousyValidation()
-    expect(lousyMode).toBe(false)
+test('stateStore onValidationFail callback', () => {
+    const fn = jest.fn(val => val)
+    ss.onValidationFail = fn
+    expect(ss.onValidationFail).toBe(fn)
+    const badfn = ('sqdsqd')
+    ss.onValidationFail = badfn
+    expect(ss.onValidationFail).toBe(fn)
+    
 })
 
 test('StateStore setState', () => {
@@ -165,25 +128,10 @@ test('StateStore setState', () => {
     expect(fn).toHaveReturnedWith([{
         testProp2: 14
     }, {
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        },
         testProp: 'aaa',
-        testProp2: 2,
-        testProp4: 'bbb',
-        testProp5: 2
     }, {
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        },
         testProp: 'aaa',
         testProp2: 14,
-        testProp4: 'bbb',
-        testProp5: 2
     }])
     const setState = jest.fn(ss.setState)
     setState(4)
@@ -197,29 +145,15 @@ test('StateStore stateChangeCallback', () => {
     ss.setState({
         testProp2: 'qqsqdqsd'
     })
-    expect(onStateChangeCallback).toHaveBeenCalledTimes(5)
+    expect(onStateChangeCallback).toHaveBeenCalledTimes(2)
     expect(onStateChangeCallback).toHaveLastReturnedWith([{
         testProp: 'bbbaaa'
     }, {
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        },
         testProp: 'aaa',
         testProp2: 14,
-        testProp4: 'bbb',
-        testProp5: 2
     }, {
-        subObject: {
-            prop1: 2,
-            prop2,
-            prop3: false
-        },
         testProp: 'bbbaaa',
         testProp2: 14,
-        testProp4: 'bbb',
-        testProp5: 2
     }])
 })
 
@@ -238,26 +172,12 @@ test('StateStore stateChange event binding', () => {
             testProp: '444saaa'
         },
         oldState: {
-            subObject: {
-                prop1: 2,
-                prop2,
-                prop3: false
-            },
             testProp: 'bbbaaa',
             testProp2: 14,
-            testProp4: 'bbb',
-            testProp5: 2
         },
         state: {
-            subObject: {
-                prop1: 2,
-                prop2,
-                prop3: false
-            },
             testProp: '444saaa',
             testProp2: 14,
-            testProp4: 'bbb',
-            testProp5: 2
         }
     })
 
@@ -291,6 +211,20 @@ test('StateStore addHandler method', () => {
     expect(fn).toHaveReturnedWith([null, 123])
 })
 
+test('StateStore unsetHandler method', () => {
+    ss.unsetHandler('testProp3')
+    expect(ss.handlers.testProp3).toBeFalsy()
+})
+
+test('setModelField method', () => {
+    ss.setModelField('propX', 'number')
+    expect(ss.model.propX).toBe('number')
+})
+test('unsetModelField method', () => {
+    ss.unsetModelField('propX')
+    expect(ss.model.propX).toBeFalsy()
+})
+
 test('StateStore state mutation through dot notation does not change state', () => {
     ss.state.testProp3 = 3
     expect(ss.state.testProp3).toBe(123)
@@ -298,127 +232,70 @@ test('StateStore state mutation through dot notation does not change state', () 
     expect(ss.state.testProp3).toBe(123)
 })
 
-test('getDiffs cases', () => {
-    const fn = jest.fn(() => getDiffs({
-        'aaa': 'aaa'
-    }, {
-        'aaa': 'aaaa'
-    }))
-    fn()
-    expect(fn).toHaveReturnedWith({
-        'aaa': 'aaaa'
+test('stateStore onStateChange callback', () => {
+    const fn = jest.fn(val => onStateChange(val))
+    ss.onStateChange = fn
+    expect(ss.onStateChange).toBe(fn)
+    const badfn = ('sqdsqd')
+    ss.onStateChange = badfn
+    expect(ss.onStateChange).toBe(fn)
+    
+})
+
+test('stateStore clearState', () => {
+    const fn = jest.fn(val => onStateChange(val))
+    ss.onStateChange = fn
+    ss.clearState()
+    expect(ss.state).toStrictEqual({})
+    ss.clearState({
+        a: '12'
     })
-    const fn2 = jest.fn(() => getDiffs({
-        'aaa': ['']
-    }, {
-        'aaa': ['']
-    }))
-    fn2()
-    expect(fn2).toHaveReturnedWith({})
-    const fn3 = jest.fn(() => getDiffs({
-        'aaa': [1]
-    }, {
-        'aaa': [1]
-    }))
-    fn3()
-    expect(fn3).toHaveReturnedWith({})
-    const fn4 = jest.fn(() => getDiffs({
-        'aaa': {
-            'bbb': 4
-        }
-    }, {
-        'aaa': {
-            'bbb': 4
-        }
-    }))
-    fn4()
-    expect(fn4).toHaveReturnedWith({
-        'aaa': {
-            'bbb': 4
-        }
+    expect(ss.state).toStrictEqual({
+        a: '12'
     })
-    const fn5 = jest.fn(() => getDiffs({
-        'aaa': {
-            'bbb': 4
-        }
-    }, {
-        'aaa': {
-            'bbb': 4
-        }
-    }))
-    fn5()
-    expect(fn5).toHaveReturnedWith({
-        'aaa': {
-            'bbb': 4
-        }
+    expect(fn).toHaveBeenCalledTimes(0)
+})
+
+test('StateStore setState array state', () => {
+    const fn = jest.fn(({
+        differences,
+        oldState,
+        state
+    }) => {
+        return [differences, oldState, state]
     })
-    const fn6 = jest.fn(() => getDiffs({
-        arr: [{
-            'aaa': {
-                'bbb': 4
+    ss.setState({
+        array: [
+            {
+                label: '1'
             },
-            [_KEY]: 'abc'
-        }],
-    }, {
-        arr: [{
-            'aaa': {
-                'bbb': 4
+            {
+                label: '2'
             },
-            [_KEY]: 'abc'
-        }]
-    }))
-    fn6()
-    expect(fn6).toHaveReturnedWith({})
-    const fn7 = jest.fn(() => getDiffs({
-        arr: [{
-            'aaa': {
-                'bbb': 4
+            {
+                label: '3'
             },
-            [_KEY]: 'abc'
-        }],
-    }, {
-        arr: null,
-    }))
-    fn7()
-    expect(fn7).toHaveReturnedWith({
-        arr: null
-    })
-    const fn8 = jest.fn(() => getDiffs({
-        arr: [{
-            'aaa': {
-                'bbb': 4
+            {
+                label: '4',
+                _KEY: 'item4'
             },
-            [_KEY]: 'abc'
-        }],
-    }, {
-        arr: [{
-            'aaa': {
-                'bbb': 4
-            },
-            [_KEY]: 'ccc'
-        },
-        {
-            'aaa': {
-                'bbb': 4
-            },
-            [_KEY]: 'abc'
-        },
-        ],
-    }))
-    fn8()
-    expect(fn8).toHaveReturnedWith({
-        arr: [{
-            'aaa': {
-                'bbb': 4
-            },
-            [_KEY]: 'ccc'
-        },
-        {
-            'aaa': {
-                'bbb': 4
-            },
-            [_KEY]: 'abc'
-        },
         ]
+    }, fn)
+    let item3 = ss.state.array[2]
+    let item4 = ss.state.array[3]
+    expect(item3).toMatchObject({
+        label: '3'
+    })
+    expect(item4).toMatchObject({
+        label: '4',
+        [_KEY]: 'item4'
+    })
+    const { array } = ss.state
+    array[3].label = 'new label'
+    ss.setState({ array })
+    item4 = ss.state.array[3]
+    expect(item4).toMatchObject({
+        label: 'new label',
+        [_KEY]: 'item4'
     })
 })

@@ -6,10 +6,11 @@ const createCreatedEvent = params => new CustomEvent('created', { detail: params
 const createStateChangeEvent = params => new CustomEvent('statechange', { detail: params })
 const createValidationFailEvent = params => new CustomEvent('validationfail', { detail: params })
 
-export class StateStore {
-    static stores = {
+export const Stores = {
 
-    }
+}
+export class StateStore {
+    static Stores = Stores
     static _initState(instance, state) {
         return new Proxy(state || instance._state || {}, {
             set: (rawStateObj, prop, value) => {
@@ -19,8 +20,8 @@ export class StateStore {
                     rawStateObj[prop] = value
                     instance._changedState[instance._changedState.length] = [prop, { oldValue, value: rawStateObj[prop] }]
                 } else {
-                    this._eventStore.dispatchEvent(createValidationFailEvent({ state: prop, rejected: value }))
-                    typeof this._onValidationFail == 'function' && this._onValidationFail({ state: prop, rejected: value })
+                    instance._eventStore.dispatchEvent(createValidationFailEvent({ state: prop, rejected: value }))
+                    typeof instance._onValidationFail == 'function' && instance._onValidationFail({ state: prop, rejected: value })
                     if (StateStore.enableWarnings) {
                         console.warn(`${value} isn't a valid value for ${prop} field`)
                     }
@@ -44,7 +45,7 @@ export class StateStore {
         return h
     }
     constructor({ namespace = '', state = {}, model, modelOptions = { lousyValidation: false, }, handlers, onStateChange, onValidationFail } = {}) {
-        this._storeName = namespace || 'store-' + Object.keys(StateStore.stores).length
+        this._storeName = namespace || 'store-' + Object.keys(StateStore.Stores).length
         this._eventStore = new EventDispatcher()
         this._state = StateStore._initState(this, state)
         this._model = new StateModel(model, modelOptions)
@@ -52,7 +53,7 @@ export class StateStore {
         this._changedState = []
         this._onStateChange = onStateChange
         this._onValidationFail = onValidationFail
-        StateStore.stores[this._storeName] = this
+        StateStore.Stores[this._storeName] = this
         this._eventStore.dispatchEvent(createCreatedEvent({ state: { ...this._state }, storeName: this._storeName }))
     }
     /*     dismantle() {
@@ -66,7 +67,7 @@ export class StateStore {
         } */
     toggleLousyValidation() {
         this._model.toggleLousy()
-        return this._model._lousy
+        return this._model.lousy
     }
     on(event, fn) {
         this._eventStore.addEventListener(event, fn)
@@ -96,7 +97,7 @@ export class StateStore {
         return this._model.fields
     }
     get handlers() {
-        return this._handlers ? this._handlers : {}
+        return this._handlers
     }
     get state() {
         return { ...this._state }
@@ -138,7 +139,7 @@ export class StateStore {
             for (let state in stateObj) {
                 if (Array.isArray(stateObj[state]))
                     this._state[state] = stateObj[state].map((item, index) => {
-                        item[_KEY] = item._KEY ? item._KEY : 'key' + index
+                        item[_KEY] = item._KEY ? item._KEY : item[_KEY] ? item[_KEY] : `${index}_${(new Date).getTime().toString(16)}`
                         return item
                     })
                 else
