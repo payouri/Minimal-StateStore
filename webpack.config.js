@@ -8,6 +8,7 @@ module.exports = {
         filename: 'minimal-statestore.js',
         library: 'StateStore',
         libraryTarget: 'umd',
+        globalObject: 'this'
     },
     module: {
         rules: [
