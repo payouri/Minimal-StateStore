@@ -1,8 +1,10 @@
 # Minimal-StateStore
-Store data and trigger handlers on state update
-Optional data validation
-12.1kb minified
-Uses ES6 Proxy
+
+## Summary
+Store data and trigger handlers on state update <br>
+Optional data validation <br>
+12.1kb minified <br>
+Uses ES6 Proxy<br>
 ![can i use proxy table](https://caniuse.bitsofco.de/image/proxy.png)
 
 ```javascript
@@ -24,6 +26,14 @@ const stateStore = new StateStore({
   onValidationFail: Function // triggered when a state fail model validation 
 });
 ```
+## Documentation
+Full documentation available on [Github Pages](https://payouri.github.io/Minimal-StateStore/index.html).
+
+## Installing Package
+```
+npx install @youri-kane/minimal-statestore
+```
+
 
 ## npm scripts
 ```javascript
