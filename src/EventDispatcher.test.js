@@ -2,6 +2,7 @@ import { EventDispatcher } from './EventDispatcher'
 
 const ed = new EventDispatcher()
 const testfn = jest.fn(e => e)
+const notFn = 'notFn'
 const createTestEvent = () => new CustomEvent('test')
 test('EventDispatcher init', () => {
     expect(ed).toBeInstanceOf(EventDispatcher)
@@ -9,7 +10,10 @@ test('EventDispatcher init', () => {
 
 test('EventDispatcher addEventListener method', () => {
     ed.addEventListener('test', testfn)
+    ed.addEventListener('test', notFn)
     expect(ed.hasEventListener('test', testfn)).toBe(true)
+    expect(ed.hasEventListener('test', notFn)).toBe(false)
+    console.log(ed._listeners)
 })
 
 test('EventDispatcher removeEventListener method', () => {
@@ -25,6 +29,6 @@ test('EventDispatcher addEventListener once param', () => {
 
 test('EventDispatcher removeEventListeners method', () => {
     ed.addEventListener('test', testfn)
-    ed.removeEventListeners()
+    ed.dropEventListeners()
     expect(ed._listeners).toStrictEqual([])
 })

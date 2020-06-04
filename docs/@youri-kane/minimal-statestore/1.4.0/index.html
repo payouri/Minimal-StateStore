@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-EventDispatcher.EventDispatcher.html">EventDispatcher</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-StateModel.StateModel.html">StateModel</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-StateStore.StateStore.html">StateStore</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.StateStore.html#._initHandlers">_initHandlers</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.StateStore.html#._initState">_initState</a></span></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-EventDispatcher.html">EventDispatcher</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~dispatchEvent">dispatchEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~removeEventListener">removeEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~removeEventListeners">removeEventListeners</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-StateModel.html">StateModel</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~checkValid">checkValid</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~destroyFields">destroyFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~setField">setField</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~toggleShallow">toggleShallow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~unsetField">unsetField</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-StateStore.html">StateStore</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~clearState">clearState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~off">off</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~on">on</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~setHandler">setHandler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~setModelField">setModelField</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~setState">setState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~toggleShallowValidation">toggleShallowValidation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~unsetHandler">unsetHandler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~unsetModelField">unsetModelField</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>Minimal-StateStore</h1>
+<p>Store data and trigger handlers on state update
+Optional data validation
+12.1kb minified
+Uses ES6 Proxy
+<img src="https://caniuse.bitsofco.de/image/proxy.png" alt="can i use proxy table"></p>
+<pre class="prettyprint source lang-javascript"><code>const stateStore = new StateStore({
+  namespace: String, //optional store name
+  state: {
+  //data value that will be observed
+  },
+  model: {
+  //optional validation
+  },
+  handlers: {
+  //this property holds functions that will be called when the associated state changes
+  },
+  modelOptions: {
+    shallowValidation: Boolean, // default to false
+  },
+  onStateChange: Function, // triggered only if the new state is different from the previous one
+  onValidationFail: Function // triggered when a state fail model validation 
+});
+</code></pre>
+<h2>npm scripts</h2>
+<pre class="prettyprint source lang-javascript"><code>{
+    &quot;build&quot;: &quot;node ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js ./src/index.js&quot;,
+    &quot;generate-docs&quot;: &quot;node_modules/.bin/jsdoc --configure .jsdoc.json --verbose&quot;,
+    &quot;test&quot;: &quot;jest&quot;,
+    &quot;test-verbose&quot;: &quot;jest --coverage --config ./jest.config.js&quot;
+}
+</code></pre>
+<h2>State, Model and Handlers relationship</h2>
+<p>setState =&gt; Model Validation() =&gt; State Update =&gt; Trigger Handler</p>
+<h2>State Property</h2>
+<p>The state property allow you to store initial values while initializing the store
+States can be updated using the stateStoreInstance.setState method, they can also be retrieved using the stateStoreInstance.state property
+exemple of initialisation:</p>
+<pre class="prettyprint source lang-javascript"><code>  state: {
+    name: 'John Doe',
+    age: 29,
+  }
+</code></pre>
+<p><strong>Note:</strong> initial values won't be checked against the model</p>
+<h2>Model Property</h2>
+<p>The model property allow you to validate data before setting state<br>
+It can be:</p>
+<h3>a regexp</h3>
+<pre class="prettyprint source lang-javascript"><code>  model: {
+    name: new RegExp(/.{1,}/)
+  }
+</code></pre>
+<h3>a function</h3>
+<pre class="prettyprint source lang-javascript"><code>  model: {
+    name: value => (typeof value == 'string' && value.length &lt; 6)
+  }
+</code></pre>
+<h3>a type</h3>
+<pre class="prettyprint source lang-javascript"><code>  model: {
+    name: 'string',
+    age: 'number',
+    other: ['number', 'boolean'],
+  }
+</code></pre>
+<h3>a set of values</h3>
+<pre class="prettyprint source lang-javascript"><code>  model: {
+    status: [0, 1, 2, 3]
+  }
+</code></pre>
+<h3>modelOptions.shallowValidation property</h3>
+<p>if stateStoreInstance is initialized with new StateStore({..., modelOptions = { shallowValidation: true, }}) it will be possible to update states that were not declared on stateStoreInstance init</p>
+<h2>Handlers Property</h2>
+<p>handlers function are named after state so they can be triggered when a state is updated
+<strong>Note:</strong> Handlers will be triggered after all state modifications occurred</p>
+<pre class="prettyprint source lang-javascript"><code>  handlers: {
+    name: ({ oldValue, value, store }) => {
+      console.log(oldValue) // previous state value
+      console.log(value) // current state value
+      console.log(store) // current state of the store
+    }
+  }
+</code></pre>
+<h2>Methods</h2>
+<h3>setState</h3>
+<p>setState function is the only way to update the stored values</p>
+<pre class="prettyprint source lang-javascript"><code>stateStoreInstance.setState({
+  property: value
+}, ({ differences, oldState, state }) => {
+  differences //object containing only the updated states
+  olState //object previous state of the store
+  state //object actual state of the store
+})
+</code></pre>
+<h3>clearState</h3>
+<p>clearState function allows you to empty/reset the state without triggering any handler</p>
+<pre class="prettyprint source lang-javascript"><code>stateStoreInstance.clearState({props: 'value to reset', prop2: 'value to reset'} /* defaults to an empty object */, () => {
+  //doesn't get any params
+})
+</code></pre>
+<h3>toggleShallowValidation</h3>
+<p>toggleShallowValidation allow you to switch the mode of state validation
+when the value is true, state not declared in the model will be updatable
+when set to false only the properties set to false only state declared in the model will be updatable</p>
+<pre class="prettyprint source lang-javascript"><code>  const enabled = stateStore.toggleShallowValidation
+  console.log(enabled) //true || false
+</code></pre>
+<h3>on</h3>
+<pre class="prettyprint source lang-javascript"><code>  const onStateChange = event => void console.log(event)
+  stateStoreInstance.on('statechange', onStateChange)
+</code></pre>
+<h3>off</h3>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.off('statechange', onStateChange)
+</code></pre>
+<h3>setModelField</h3>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.setModelField('fieldname', fieldModel)
+  console.log(stateStoreInstance.model.fieldname) // fieldModel
+</code></pre>
+<h3>unsetModelField</h3>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.unsetModelField('fieldname')
+  console.log(stateStoreInstance.model.fieldname) // undefined
+</code></pre>
+<h3>setHandler</h3>
+<p>add state handler</p>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.setHandler('fieldname', Function)
+</code></pre>
+<h3>unsetHandler</h3>
+<p>remove state handler</p>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.unsetModelField('fieldname')
+</code></pre>
+<h2>Events</h2>
+<h3>created</h3>
+<p>created event is fired when new StateStore instance is created</p>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.on('created', event => {
+    console.log(event.detail) // { state: initial state, storeName: name of the created store }
+  })
+</code></pre>
+<h3>statechange</h3>
+<p>statechange event is fired when the previous state is different form the current state</p>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.on('statechange', event => {
+    console.log(event.detail) // { state: current state, oldState: previous state, differences: states that changed }
+  })
+</code></pre>
+<h3>validationfail</h3>
+<p>validationfail event is fired when a state update has failed model validation</p>
+<pre class="prettyprint source lang-javascript"><code>  stateStoreInstance.on('validationfail', event => {
+    console.log(event.detail) // { state: state that failed to update, rejected: value that failed to validate }
+  })
+</code></pre>
+<h2>Working exemple</h2>
+<pre class="prettyprint source lang-javascript"><code>const stateStore = new StateStore({
+  state: {
+    name: '',
+  },
+  model: {
+    name: 'string'
+  },
+  handlers: {
+    name: ({ oldValue, value }) => {
+      alert('Hello, ' + value)
+      console.log(stateStore.state.value)
+    }
+  },
+});
+
+stateStore.setState({
+  name: 'John Doe',
+  age: 18,
+}, ({ differences, oldState, state }) => {
+  console.log(difference) // { name: 'John Doe' }
+  console.log(oldState) // { name: '' }
+  console.log(state) // { name: 'John Doe' }
+})
+
+const enabled = stateStore.toggleShallowValidation()
+console.log(enabled) // true
+stateStore.setState({
+  age: 18
+},  ({ differences, oldState, state }) => {
+  console.log(difference) // { age: '18' }
+  console.log(oldState) // { name: 'John Doe' }
+  console.log(state) // { name: 'John Doe', age: 18 }
+})
+
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Jun 04 2020 15:58:43 GMT+0200 (GMT+02:00) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

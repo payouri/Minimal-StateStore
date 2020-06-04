@@ -55,13 +55,26 @@ test('StateStore state init', () => {
     expect(ss.state).toStrictEqual({
         testProp: 'aaa'
     })
+    expect(ss._state.undefinedProp).toBe(null)
 })
 
 test('StateStore state is not mutable', () => {
     // console.log(ss.state = { testProp: '123' })
+    ss.state = {testProp: '123'}
+
+    StateStore.enableWarnings = true
+
     expect(ss.state).toStrictEqual({
         testProp: 'aaa'
     })
+
+    StateStore.enableWarnings = false
+    
+    expect(ss.state).toStrictEqual({
+        testProp: 'aaa'
+    })
+
+    StateStore.enableWarnings = true
 })
 
 test('StateStore model init', () => {
@@ -69,9 +82,9 @@ test('StateStore model init', () => {
 })
 
 test('stateStore toggle model validation mode', () => {
-    let mode = ss.toggleLousyValidation()
+    let mode = ss.toggleShallowValidation()
     expect(mode).toBe(true)
-    mode = ss.toggleLousyValidation()
+    mode = ss.toggleShallowValidation()
     expect(mode).toBe(false)
 })
 
@@ -244,16 +257,18 @@ test('stateStore onStateChange callback', () => {
 
 test('stateStore clearState', () => {
     const fn = jest.fn(val => onStateChange(val))
+    const cb = jest.fn(e => e)
     ss.onStateChange = fn
     ss.clearState()
     expect(ss.state).toStrictEqual({})
     ss.clearState({
         a: '12'
-    })
+    }, cb)
     expect(ss.state).toStrictEqual({
         a: '12'
     })
     expect(fn).toHaveBeenCalledTimes(0)
+    expect(cb).toHaveBeenCalledTimes(1)
 })
 
 test('StateStore setState array state', () => {

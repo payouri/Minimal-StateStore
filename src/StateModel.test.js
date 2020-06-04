@@ -22,15 +22,15 @@ test('Model init', () => {
 })
 
 test('model get lousy state', () => {
-    expect(sm.lousy).toBe(false)
+    expect(sm.shallow).toBe(false)
 })
 
 test('model add field', () => {
-    sm.setModel('h', RegExp(/^(?!(\d+))$/))
+    sm.setField('h', RegExp(/^(?!(\d+))$/))
 })
 
 test('model remove field', () => {
-    sm.unsetModel('z')
+    sm.unsetField('z')
 })
 
 test('model type validation', () => {
@@ -110,14 +110,14 @@ test('model subObject validation', () => {
 })
 
 test('model lousy validation toggle', () => {
-    let lousyMode = sm.toggleLousy()
+    let lousyMode = sm.toggleShallow()
     expect(lousyMode).toBe(true)
-    lousyMode = sm.toggleLousy()
+    lousyMode = sm.toggleShallow()
     expect(lousyMode).toBe(false)
 })
 
 test('model lousy field validation', () => {
-    let lousyMode = sm.toggleLousy()
+    let lousyMode = sm.toggleShallow()
     expect(lousyMode).toBe(true)
     const fn = jest.fn(() => sm.checkValid('y', 'aaa'))
     fn()
@@ -130,7 +130,7 @@ test('model lousy field validation', () => {
     }))
     fnbis()
     expect(fnbis).toHaveReturnedWith(true)
-    lousyMode = sm.toggleLousy()
+    lousyMode = sm.toggleShallow()
     expect(lousyMode).toBe(false)
     const fn2 = jest.fn(() => sm.checkValid('y', 'aaa'))
     fn2()
@@ -143,7 +143,7 @@ test('destroy model fields', () => {
 })
 
 test('add fields after destroy', () => {
-    sm.setModel('z', 'number')
+    sm.setField('z', 'number')
     expect(sm.fields).toStrictEqual({
         z: 'number'
     })

@@ -1,13 +1,13 @@
 # Minimal-StateStore
-Store data and trigger state updates
+Store data and trigger handlers on state update
 Optional data validation
-
+12.1kb minified
 Uses ES6 Proxy
 ![can i use proxy table](https://caniuse.bitsofco.de/image/proxy.png)
 
 ```javascript
 const stateStore = new StateStore({
-  namespace: String //optional store name
+  namespace: String, //optional store name
   state: {
   //data value that will be observed
   },
@@ -18,10 +18,21 @@ const stateStore = new StateStore({
   //this property holds functions that will be called when the associated state changes
   },
   modelOptions: {
-    lousyValidation: Boolean, // default to false
+    shallowValidation: Boolean, // default to false
   },
-  onStateChange: Function // triggered only if the new state is different from the previous one
+  onStateChange: Function, // triggered only if the new state is different from the previous one
+  onValidationFail: Function // triggered when a state fail model validation 
 });
+```
+
+## npm scripts
+```javascript
+{
+    "build": "node ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js ./src/index.js",
+    "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose",
+    "test": "jest",
+    "test-verbose": "jest --coverage --config ./jest.config.js"
+}
 ```
 
 ## State, Model and Handlers relationship
@@ -68,8 +79,8 @@ It can be:
     status: [0, 1, 2, 3]
   }
 ```
-### modelOptions.lousyValidation property
-if stateStoreInstance is initialized with new StateStore({..., modelOptions = { lousyValidation: true, }}) it will be possible to update states that were not declared on stateStoreInstance init
+### modelOptions.shallowValidation property
+if stateStoreInstance is initialized with new StateStore({..., modelOptions = { shallowValidation: true, }}) it will be possible to update states that were not declared on stateStoreInstance init
 
 ## Handlers Property
 handlers function are named after state so they can be triggered when a state is updated
@@ -102,12 +113,12 @@ stateStoreInstance.clearState({props: 'value to reset', prop2: 'value to reset'}
   //doesn't get any params
 })
 ```
-### toggleLousyValidation
-toggleLousyValidation allow you to switch the mode of state validation
+### toggleShallowValidation
+toggleShallowValidation allow you to switch the mode of state validation
 when the value is true, state not declared in the model will be updatable
 when set to false only the properties set to false only state declared in the model will be updatable
 ```javascript
-  const enabled = stateStore.toggleLousyValidation
+  const enabled = stateStore.toggleShallowValidation
   console.log(enabled) //true || false
 ```
 ### on
@@ -189,7 +200,7 @@ stateStore.setState({
   console.log(state) // { name: 'John Doe' }
 })
 
-const enabled = stateStore.toggleLousyValidation()
+const enabled = stateStore.toggleShallowValidation()
 console.log(enabled) // true
 stateStore.setState({
   age: 18

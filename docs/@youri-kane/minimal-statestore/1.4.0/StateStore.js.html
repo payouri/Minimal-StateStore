@@ -1,4 +1,45 @@
-/** @module StateStore */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>StateStore.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-EventDispatcher.EventDispatcher.html">EventDispatcher</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-StateModel.StateModel.html">StateModel</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="module-StateStore.StateStore.html">StateStore</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.StateStore.html#._initHandlers">_initHandlers</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.StateStore.html#._initState">_initState</a></span></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-EventDispatcher.html">EventDispatcher</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~addEventListener">addEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~dispatchEvent">dispatchEvent</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~hasEventListener">hasEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~removeEventListener">removeEventListener</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-EventDispatcher.html#~removeEventListeners">removeEventListeners</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-StateModel.html">StateModel</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~checkValid">checkValid</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~destroyFields">destroyFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~setField">setField</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~toggleShallow">toggleShallow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateModel.html#~unsetField">unsetField</a></span></li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-StateStore.html">StateStore</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~clearState">clearState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~off">off</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~on">on</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~setHandler">setHandler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~setModelField">setModelField</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~setState">setState</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~toggleShallowValidation">toggleShallowValidation</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~unsetHandler">unsetHandler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-StateStore.html#~unsetModelField">unsetModelField</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">StateStore.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @module StateStore */
 import { EventDispatcher } from './EventDispatcher'
 import { StateModel } from './StateModel'
 import { _KEY, getDiffs } from './getDiffs'
@@ -27,9 +68,9 @@ export const Stores = {
 /**
  * @typedef {Object} StateStoreInit
  * @property {String} [namespace=""] 
- * @property {Object.<string, any>} [state={}] initial state object
- * @property {Object.<string, (string|Array|Function)>} [model] initial model validation object
- * @property {Object.<string, Function>} handlers
+ * @property {Object.&lt;string, any>} [state={}] initial state object
+ * @property {Object.&lt;string, (string|Array|Function)>} [model] initial model validation object
+ * @property {Object.&lt;string, Function>} handlers
  * @property {Function} onStateChange callback function called on each state change
  * @property {Function} onValidationFail callback function called when a state update is rejected because of model validation fail
  * @property {Object} modelOptions 
@@ -81,7 +122,7 @@ export class StateStore {
                      * @fires validationfail 
                     */
                     instance._eventStore.dispatchEvent(createValidationFailEvent({ state: prop, rejected: value }))
-                    typeof instance._onValidationFail == 'function' && instance._onValidationFail({ state: prop, rejected: value })
+                    typeof instance._onValidationFail == 'function' &amp;&amp; instance._onValidationFail({ state: prop, rejected: value })
                     if (StateStore.enableWarnings) {
                         console.warn(`${value} isn't a valid value for ${prop} field`)
                     }
@@ -97,7 +138,7 @@ export class StateStore {
      * 
      * @param {StateStoreInit.model} handlers 
      * 
-     * @returns {Object.<string, Function>}
+     * @returns {Object.&lt;string, Function>}
     */
     static _initHandlers(handlers) {
         const h = {}
@@ -198,7 +239,7 @@ export class StateStore {
     /**
      * @readonly
      * @description Get current state model {@link module:StateModel~fields fields}.
-     * @member {Object.<string, (String|Array|Function)>} model
+     * @member {Object.&lt;string, (String|Array|Function)>} model
     */
     get model() {
         return this._model.fields
@@ -207,13 +248,13 @@ export class StateStore {
      * @readonly
      * @description Get current state handlers.
      * Set handlers property after initialization using {@link module:StateStore~setHandler StateStoreInstance.setHandler}.
-     * @member {Object.<string, Function>} handlers
+     * @member {Object.&lt;string, Function>} handlers
     */
     get handlers() {
         return this._handlers
     }
     /**
-     * @member {Object.<string, any>} state
+     * @member {Object.&lt;string, any>} state
      * @description Get current state values. 
      * To set store inner state object use instead {@link module:StateStore~setState StateStoreInstance.setState}.
      * @readonly
@@ -273,17 +314,17 @@ export class StateStore {
      * @description Unset all state properties by default, if a stateObj is given replace
      * current state obj with the provided stateObj.
      * 
-     * @param {Object.<string, any>} [stateObj={}] values the store should be reset to
+     * @param {Object.&lt;string, any>} [stateObj={}] values the store should be reset to
      * @param {Function} [callback] function called after the store has been cleared
      */
     clearState(stateObj = {}, callback) {
         this._state = StateStore._initState(this, stateObj)
-        typeof callback == 'function' && callback()
+        typeof callback == 'function' &amp;&amp; callback()
     }
     /**
      * @method setState
      * @description Set new state value if validation is successful
-     * @param {Object.<string, any>} stateObj 
+     * @param {Object.&lt;string, any>} stateObj 
      * @param {Function} [callback] 
      */
     setState(stateObj, callback) {
@@ -305,9 +346,9 @@ export class StateStore {
 
             // triggers state corresponding handler
             if (this._changedState.length > 0) {
-                for (let i = 0, n = this._changedState.length; i < n; i++) {
+                for (let i = 0, n = this._changedState.length; i &lt; n; i++) {
                     const [stateName, values] = this._changedState[i]
-                    typeof this._handlers[stateName] == 'function' && this._handlers[stateName]({ ...values, store: state })
+                    typeof this._handlers[stateName] == 'function' &amp;&amp; this._handlers[stateName]({ ...values, store: state })
                 }
                 // reset changed state array
                 this._changedState = []
@@ -317,10 +358,10 @@ export class StateStore {
 
             if (Object.keys(diffs).length > 0) {
                 this._eventStore.dispatchEvent(createStateChangeEvent({ oldState, state, differences: diffs }))
-                typeof this._onStateChange == 'function' && this._onStateChange({ oldState, state, differences: diffs })
+                typeof this._onStateChange == 'function' &amp;&amp; this._onStateChange({ oldState, state, differences: diffs })
             }
 
-            typeof callback == 'function' && callback({ oldState, state, differences: diffs })
+            typeof callback == 'function' &amp;&amp; callback({ oldState, state, differences: diffs })
 
             return true
         }
@@ -332,4 +373,22 @@ export class StateStore {
     }
 }
 
-export default StateStore
+export default StateStore</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Jun 04 2020 15:58:43 GMT+0200 (GMT+02:00) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
